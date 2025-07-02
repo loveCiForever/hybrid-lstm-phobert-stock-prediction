@@ -10,12 +10,16 @@ def split_sentences(text):
     return re.split(r'(?<=[.!?])\s+', text)
 
 def run() -> DataFrame:
-    vn30_symbol_list = pd.read_csv("data/raw/vn30_symbol_list.csv")['symbol'].to_list()
+    vn30_symbol_list = pd.read_csv("data/raw/vn30_symbol_df.csv")['symbol'].to_list()
     raw_dataset = pd.read_csv("data/raw/dataset.csv")
+    raw_dataset['publish_date'] = pd.to_datetime(raw_dataset['publish_date'], errors='coerce')
 
     results = []
 
     for idx, row in raw_dataset.iterrows():
+        if row['publish_date'] < pd.Timestamp("2017-08-24"):
+            continue
+
         content = row['content']
         mentioned_symbol = match_all(content=content, required_symbol_list=vn30_symbol_list)
         if not mentioned_symbol:
