@@ -23,11 +23,12 @@ def run() -> DataFrame:
 
         publish_date = row['publish_date']
         sentences = split_sentences(content)
+
         for symbol in mentioned_symbol:
             for i, sentence in enumerate(sentences):
                 if symbol in sentence:
                     prev_sentence = sentences[i-1] if i > 0 else ""
-                    next_sentence = sentences[i+1] if i < len(sentences)-1 else ""
+                    next_sentence = sentences[i+1] if i < len(sentences) - 1 else ""
                     context = " ".join([prev_sentence, sentence, next_sentence]).strip()
 
                     if len(context) > 256:
