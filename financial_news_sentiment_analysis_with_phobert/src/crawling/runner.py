@@ -44,7 +44,7 @@ def crawling(verbose:bool, max_page:int, site:str) -> list:
 
     return news_details
 
-def run(bao_dau_tu_max_page:int = 10, cafef_max_page:int = 10):
+def run(bao_dau_tu_max_page:int = 1, cafef_max_page:int = 1):
     site_1 = "bao_dau_tu"
     news_details_list_1 = crawling(verbose=False, max_page=bao_dau_tu_max_page, site=site_1)
     df_1 = pd.DataFrame(news_details_list_1)
