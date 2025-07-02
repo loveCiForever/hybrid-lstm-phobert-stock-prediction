@@ -6,4 +6,4 @@ import pandas as pd
 
 if __name__ == "__main__":
     parsed_context = run()
-    parsed_context.to_csv("data/parsed/dataset.csv", index=False)
+    parsed_context.to_csv("data/parsed/dataset.csv", index=False, encoding='utf-8-sig')
