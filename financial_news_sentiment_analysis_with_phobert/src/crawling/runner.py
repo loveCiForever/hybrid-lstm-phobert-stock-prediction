@@ -7,6 +7,7 @@ from src.crawling.scraper import (
     scrape_news_details,
     scrape_news_url
 )
+from src.utils import format_text
 
 def process_item(url:str, verbose:bool, site:str) -> dict:
     publish_datetime, content = scrape_news_details(
@@ -42,3 +43,26 @@ def crawling(verbose:bool, max_page:int, site:str) -> list:
                 news_details.append(r)
 
     return news_details
+
+def run(bao_dau_tu_max_page:int = 1, cafef_max_page:int = 1):
+    site_1 = "bao_dau_tu"
+    news_details_list_1 = crawling(verbose=False, max_page=bao_dau_tu_max_page, site=site_1)
+    df_1 = pd.DataFrame(news_details_list_1)
+    df_1['source'] = site_1
+
+    site_2 = "cafef"
+    news_details_list_2 = crawling(verbose=False, max_page=cafef_max_page, site=site_2)
+    df_2 = pd.DataFrame(news_details_list_2)
+    df_2['source'] = site_2
+
+    merged_df = pd.concat([df_1, df_2], ignore_index=True)
+
+    print(
+        format_text(
+            text=f"[SUCCESS] Found total {len(merged_df)}",
+            fg="green",
+            style="bold"
+        )
+    )
+
+    return merged_df
