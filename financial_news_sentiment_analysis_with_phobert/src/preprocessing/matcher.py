@@ -2,9 +2,6 @@
 
 import pandas as pd
 import re
-import os
-from src.utils import format_text
-
 
 def match_all(content: str, required_symbol_list: list) -> list:
     pattern = r'\b(?:' + '|'.join(re.escape(symbol) for symbol in required_symbol_list) + r')\b'

@@ -2,15 +2,13 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from src.crawling.fetcher import fetch_raw_page
+from src.crawling.fetcher import fetch_raw_html_page
 from src.utils import (
     format_text,
     parse_date_span_to_datetime
 )
 from src.crawling.cleaner import (
-    remove_quotes_and_ellipsis,
-    remove_photo_captions_and_flatten,
-    remove_hex_codes_and_invisible_unicode
+    clean_text
 )
 def scrape_news_url(verbose:bool, site:str, max_pages:int) -> list:
     target_component = None
@@ -18,8 +16,8 @@ def scrape_news_url(verbose:bool, site:str, max_pages:int) -> list:
 
     print(
         format_text(
-            text=f"[START] Scraping news url from {site}",
-            fg="blue",
+            text=f"[SCRAPING NEWS URL] From {site}",
+            fg="cyan",
         )
     )
 
@@ -54,7 +52,7 @@ def scrape_news_url(verbose:bool, site:str, max_pages:int) -> list:
             elif site == "bao_dau_tu":
                 api_url = f"https://baodautu.vn/tai-chinh-chung-khoan-d6/p{page}"
 
-            raw_page = fetch_raw_page(api_url)
+            raw_page = fetch_raw_html_page(api_url)
             soup = BeautifulSoup(raw_page, "lxml")
             page_news = [] # store news of page
 
@@ -92,15 +90,15 @@ def scrape_news_url(verbose:bool, site:str, max_pages:int) -> list:
 
     print(
         format_text(
-            text=f"[END] Scraping news list success with total: {len(all_news)} news from {site}",
-            fg="magenta",
+            text=f"[SCRAPING NEWS URL] Found {len(all_news)} news url",
+            fg="cyan",
         )
     )
 
     return all_news
 
 def scrape_news_details(url:str, verbose:bool, site:str) -> tuple[datetime, str]:
-    raw_page = fetch_raw_page(url=url)
+    raw_page = fetch_raw_html_page(url=url)
     if raw_page is None:
         print(
             format_text(
@@ -152,8 +150,6 @@ def scrape_news_details(url:str, verbose:bool, site:str) -> tuple[datetime, str]
             paragraphs.append(text)
 
     content = " ".join(paragraphs)
-    content = remove_quotes_and_ellipsis(content)
-    content = remove_hex_codes_and_invisible_unicode(content)
-    content = remove_photo_captions_and_flatten(content)
+    content = clean_text(content)
 
     return publish_datetime, content

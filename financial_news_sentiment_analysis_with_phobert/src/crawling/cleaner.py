@@ -1,6 +1,18 @@
 # src/crawling/cleaner.py
 
+
 import re
+
+"""
+Text cleaning utilities for news content preprocessing.
+Includes functions to
+    remove hex codes,
+        invisible unicode,
+        photo captions,
+        quotes,
+    and normalize punctuation.
+"""
+
 
 def remove_hex_codes_and_invisible_unicode(text:str) -> str:
     """
@@ -55,4 +67,10 @@ def remove_quotes_and_ellipsis(text:str) -> str:
     # Replace ellipsis and similar patterns with a period
     text = re.sub(r'…|\.{3}|,\.{2}', '.', text)
 
+    return text
+
+def clean_text(text: str) -> str:
+    text = remove_hex_codes_and_invisible_unicode(text)
+    text = remove_photo_captions_and_flatten(text)
+    text = remove_quotes_and_ellipsis(text)
     return text

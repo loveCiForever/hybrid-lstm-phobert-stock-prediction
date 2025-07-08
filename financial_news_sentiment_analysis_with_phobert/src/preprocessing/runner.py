@@ -2,16 +2,19 @@
 
 import re
 import pandas as pd
-from src.matching_parsing.matcher import match_all
-from src.utils import format_text
+from src.preprocessing.matcher import match_all
 from pandas import DataFrame
+from src.preprocessing.cleaner import clean_text
+from src.preprocessing.parser import split_sentences
+from src.preprocessing.segmenter import segment_texts
 
-def split_sentences(text):
-    return re.split(r'(?<=[.!?])\s+', text)
+def preprocessing_run(
+    symbol_df_path:str="data/raw/vn30_symbol_df.csv",
+    raw_dataset_path:str="data/raw/dataset.csv"
+) -> DataFrame:
 
-def run() -> DataFrame:
-    vn30_symbol_list = pd.read_csv("data/raw/vn30_symbol_df.csv")['symbol'].to_list()
-    raw_dataset = pd.read_csv("data/raw/dataset.csv")
+    vn30_symbol_list = pd.read_csv(symbol_df_path)['symbol'].to_list()
+    raw_dataset = pd.read_csv(raw_dataset_path)
     raw_dataset['publish_date'] = pd.to_datetime(raw_dataset['publish_date'], errors='coerce')
 
     results = []
@@ -35,20 +38,27 @@ def run() -> DataFrame:
                     next_sentence = sentences[i+1] if i < len(sentences) - 1 else ""
                     context = " ".join([prev_sentence, sentence, next_sentence]).strip()
 
-                    if len(context) > 256:
+                    if len(context) > 250:
                         context = " ".join([prev_sentence, sentence]).strip()
-                    if len(context) > 256:
+                    if len(context) > 250:
                         context = sentence.strip()
 
-                    num_sentences = len(split_sentences(context))
+                    context = clean_text(context)
+
+                    if len(context) > 250 or len(context) < 100:
+                        continue
+
                     results.append({
-                        "original_id": idx,
                         "symbol": symbol,
                         "context": context,
-                        "len": len(context),
                         "publish_date": publish_date,
-                        "num_sentences": num_sentences
                     })
 
     df_result = pd.DataFrame(results)
+
+    if not df_result.empty:
+        df_result["context_segmented"] = segment_texts(
+            df_result["context"].tolist()
+        )
+
     return df_result

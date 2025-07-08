@@ -10,7 +10,7 @@ HEADERS = {
 session = requests.Session()
 session.headers.update(HEADERS)
 
-def fetch_raw_page(url:str, retries=3, timeout=10, delay=1) -> str:
+def fetch_raw_html_page(url:str, retries=3, timeout=10, delay=1) -> str:
     for attempt in range(1, retries + 1):
         try:
             resp = session.get(url, timeout=timeout)
