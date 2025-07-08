@@ -8,8 +8,8 @@ from src.utils import format_text
 if __name__ == "__main__":
     start_time = time.time()
 
-    merged_df = crawling_run(bao_dau_tu_max_page=1, cafef_max_page=1)
-    output = "data/raw/test.csv"
+    merged_df = crawling_run(bao_dau_tu_max_page=500, cafef_max_page=500)
+    output = "data/raw/test_500_pages.csv"
     merged_df.to_csv(output, index=False, encoding='utf-8-sig')
     print(merged_df.sample(1).iloc[0])
 
